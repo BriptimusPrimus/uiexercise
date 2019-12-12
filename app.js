@@ -20,7 +20,6 @@
 */}
 
 
-
 {/*
 <img id={id} class="boxshot" src="{boxart}" alt="{title}">
 */}
@@ -43,23 +42,18 @@ const Boxshot = ({video}) => {
     </article>
 </il> 
 */}
-const RowVideos = ({row, videos}) => {
-    const rowVideos = document.createElement('li');
-    rowVideos.setAttribute('class', 'row-videos');
+const VideosRow = ({videoIds, videos}) => {
+    const videosRow = document.createElement('li');
+    videosRow.setAttribute('class', 'row-videos');
 
     const article = document.createElement('article');
+    const boxshots = videoIds.map(videoId => Boxshot({
+            video: videos[videoId]
+        }))
+        .forEach(element => article.appendChild(element));
 
-    // TODO: convert this into a loop
-    const videoId0 = row[0];
-    const boxshot0 = Boxshot({ video: videos[videoId0]});
-    article.appendChild(boxshot0);
-    
-    const videoId1 = row[1];
-    const boxshot1 = Boxshot({ video: videos[videoId1]});
-    article.appendChild(boxshot1);
-
-    rowVideos.appendChild(article);
-    return rowVideos;
+    videosRow.appendChild(article);
+    return videosRow;
 }
 
 {/*
@@ -76,13 +70,12 @@ const Gallery = ({rows, billboards, videos}) => {
     section.setAttribute('class', 'gallery');
 
     const ul = document.createElement('ul');
-    
-    // TODO: convert this into a loop
-    const row1 = RowVideos({
-        row: rows[1],
-        videos
-    });
-    ul.appendChild(row1);
+
+    rows.map(videoIds => VideosRow({
+            videoIds,
+            videos
+        }))
+        .forEach(element => ul.appendChild(element));
     
     section.appendChild(ul);
     return section;
