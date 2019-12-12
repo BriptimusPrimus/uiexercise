@@ -1,4 +1,5 @@
 ~~git init~~\
+render grid with videos\
 render all markup\
 break render into components\
 design state schema\
