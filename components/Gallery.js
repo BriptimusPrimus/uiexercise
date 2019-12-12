@@ -1,10 +1,12 @@
 import VideosRow from './VideosRow.js';
+import Billboard from './Billboard.js';
 
 {/*
     <section class="gallery">
         <ul>
-            <RowVideos/>
-            <RowVideos/>
+            <Billboard/>
+            <VideosRow/>
+            <VideosRow/>
             ...
         </ul>
     </section>
@@ -15,10 +17,22 @@ const Gallery = ({rows, billboards, videos}) => {
 
     const ul = document.createElement('ul');
 
-    rows.map(videoIds => VideosRow({
-            videoIds,
-            videos
-        }))
+    rows.map((videoIds, rowIndex) => {
+            // Check for billboard rows
+            if (billboards[rowIndex]) {
+                return Billboard({
+                    videoIds,
+                    structure: billboards[rowIndex],
+                    videos
+                });
+            }
+
+            return VideosRow({
+                videoIds,
+                videos
+            })
+        })
+        .filter(item => item !== undefined)
         .forEach(element => ul.appendChild(element));
     
     section.appendChild(ul);

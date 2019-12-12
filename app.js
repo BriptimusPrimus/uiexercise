@@ -14,17 +14,20 @@ const preprocessData = function preprocessData(data) {
     const createIdsMap = (acum, video) => {
         return {
             ...acum,
-            [video.id]: {
-                id: video.id,
-                title: video.title,
-                boxart: video.boxart
-            }
-        }
+            [video.id]: video
+        };
     };
+
+    const createRowsMap = (acum, billboard) => {
+        return {
+            ...acum,
+            [billboard.row]: billboard
+        };
+    }
 
     return {
         rows: data.rows,
-        billboards: data.billboards,
+        billboards: data.billboards.reduce(createRowsMap, {}),
         videos: data.videos.reduce(createIdsMap, {})
     };
 }
