@@ -4,57 +4,61 @@
     <section class="gallery">
         <ul>
             <il class="row-videos">
-                <ul>
-                    <li id={id}>
-                        <article class="boxshot">
-                            <figure>
-                                <img src="{boxart}" alt="{title}">
-                            </figure>
-                        </article>
-                    </li>
-                    <li id={id}>
-                        ...
-                    </li>
-                </ul>
+                <article class="boxshot">
+                    <img id={id} class="boxshot" src="{boxart}" alt="{title}">
+                    <img id={id} class="boxshot" src="{boxart}" alt="{title}">
+                    ...
+                </article>
             </il>
             <il class="row-videos">
                 ...
             </il>
+            ...
         </ul>
     </section>
 </main>
 */}
 
 
+
+{/*
+<img id={id} class="boxshot" src="{boxart}" alt="{title}">
+*/}
 const Boxshot = ({video}) => {
-    return;
+    const { id, title, boxart } = video;
+    const img = document.createElement('img');
+    img.setAttribute('id', id);
+    img.setAttribute('src', boxart);
+    img.setAttribute('alt', title);
+    img.setAttribute('class', 'boxshot');
+    return img;
 }
 
 {/* 
 <il class="row-videos">
-    <ul>
+    <article>
         <Boxshot/>
         <Boxshot/>
         ...
-    </ul>
+    </article>
 </il> 
 */}
 const RowVideos = ({row, videos}) => {
     const rowVideos = document.createElement('li');
     rowVideos.setAttribute('class', 'row-videos');
 
-    const ul = document.createElement('ul');
+    const article = document.createElement('article');
 
     // TODO: convert this into a loop
     const videoId0 = row[0];
-    // const boxshot0 = Boxshot({ video: videos[videoId0]});
-    // ul.appendChild(boxshot0);
+    const boxshot0 = Boxshot({ video: videos[videoId0]});
+    article.appendChild(boxshot0);
     
     const videoId1 = row[1];
-    // const boxshot1 = Boxshot({ video: videos[videoId1]});
-    // ul.appendChild(boxshot1);
+    const boxshot1 = Boxshot({ video: videos[videoId1]});
+    article.appendChild(boxshot1);
 
-    rowVideos.appendChild(ul);
+    rowVideos.appendChild(article);
     return rowVideos;
 }
 
@@ -111,6 +115,28 @@ const init = function init(initialData) {
     container.appendChild(element);
 }
 
+// Changes the structure of the initial data to provide
+// faster and easier video lookup
+const preprocessData = function preprocessData(data) {
+    const createIdsMap = (acum, video) => {
+        return {
+            ...acum,
+            [video.id]: {
+                id: video.id,
+                title: video.title,
+                boxart: video.boxart
+            }
+        }
+    };
+
+    return {
+        rows: data.rows,
+        billboards: data.billboards,
+        videos: data.videos.reduce(createIdsMap, {})
+    };
+}
+
 export function render(data) {
-    init(data);
+    const processedData = preprocessData(data);
+    init(processedData);
 };
