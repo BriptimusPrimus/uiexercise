@@ -16,15 +16,19 @@ const Billboard = ({videoIds, structure, videos}) => {
     // Grab the first video ID in the row, discard the rest
     const videoId = videoIds[0];
     const video = videos[videoId];
+    const bgnClassName = structure.type === 'inline' ?
+        'row-billboard row-billboard-inline' :
+        'row-billboard';
 
     const li = document.createElement('li');
-    li.setAttribute('class', 'row-billboard');
+    li.setAttribute('class', bgnClassName);
 
     const header = document.createElement('header');
     header.setAttribute('id', videoId);
 
     const bgndImg = document.createElement('img');
-    bgndImg.setAttribute('src', video.background);
+    const imgSrc = video.background || video.backgroundShort;
+    bgndImg.setAttribute('src', imgSrc);
     bgndImg.setAttribute('class', 'billboard-background');
     bgndImg.setAttribute('alt', video.title);
     header.appendChild(bgndImg);

@@ -21,8 +21,8 @@ const MetadataButtons = ({buttons}) =>  {
 */}
 const MetadataButton = ({ type, text }) => {
     const className = type === 'play' ?
-        'billboard-metadata-button' :
-        'billboard-metadata-button billboard-metadata-button-play'
+        'billboard-metadata-button billboard-metadata-button-play' :
+        'billboard-metadata-button';
     const button = document.createElement('button');
     button.setAttribute('class', className);
     const textNode = document.createTextNode(text);
@@ -50,11 +50,13 @@ const BillboardMeta = ({video, buttons}) => {
     logoImg.setAttribute('src', logo);
     article.appendChild(logoImg);
 
-    const synopsisText = document.createElement('p');
-    synopsisText.setAttribute('class', 'billboard-metadata-synopsis');
-    const textNode = document.createTextNode(synopsis);
-    synopsisText.appendChild(textNode);
-    article.appendChild(synopsisText);
+    if (synopsis) {
+        const synopsisText = document.createElement('p');
+        synopsisText.setAttribute('class', 'billboard-metadata-synopsis');
+        const textNode = document.createTextNode(synopsis);
+        synopsisText.appendChild(textNode);
+        article.appendChild(synopsisText);
+    }
 
     const metaButtons = MetadataButtons({buttons});
     article.appendChild(metaButtons);
