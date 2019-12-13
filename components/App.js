@@ -1,9 +1,9 @@
 import Main from './Main.js';
 
-const constants = {
-    PAGE_SIZE: 3,
-    MAX_LOADED_PAGES: 3
-}; 
+const PAGE_SIZE = 3;
+const MAX_LOADED_PAGES = 5;
+const ROW_HEIGHT = 166;
+const PAGE_HEIGHT = PAGE_SIZE * ROW_HEIGHT;
 
 const register = function register({component, view, initialState}) {
     let currentState = initialState || {};
@@ -42,10 +42,9 @@ const App = data => {
         ...data,
         currentPage: 0,
         loadedRows: Array.from(
-            Array(constants.PAGE_SIZE * constants.MAX_LOADED_PAGES),
+            Array(PAGE_SIZE * MAX_LOADED_PAGES),
             (x, index) => index
-        ),
-        lastPageLoaded: constants.MAX_LOADED_PAGES - 1
+        )
     };
 
     const element = view(state);
@@ -57,28 +56,28 @@ const App = data => {
         initialState: state
     });
 
-    const totalPages = Math.ceil(state.rows.length / constants.PAGE_SIZE);
     let last_known_scroll_position = 0;
     let ticking = false;
 
-    // window.scrollY < document.body.scrollHeight - window.innerHeight;
     const scrollHandler = function scrollHandler(scrollYPos) {
-        if (state.lastPageLoaded >= totalPages - 1) {
-            return;
-        }
-        if (scrollYPos < document.body.scrollHeight - window.innerHeight) {
+        // Uncomment for Infinite scroll
+        // window.scrollY < document.body.scrollHeight - window.innerHeight;
+        // if (scrollYPos < document.body.scrollHeight - window.innerHeight) {
+        //     return;
+        // }
+        const page = resolvePage(scrollYPos, PAGE_HEIGHT, state.currentPage, MAX_LOADED_PAGES);
+        if (page === state.currentPage) {
             return;
         }
 
         state = updateState({
-            currentPage: state.currentPage + 1,
-            loadedRows: state.loadedRows.concat(
-                Array.from(
-                    Array(constants.PAGE_SIZE),
-                    (x, index) => index + state.loadedRows.length
-                )
-            ),
-            lastPageLoaded: state.lastPageLoaded + 1
+            currentPage: page,
+            loadedRows: resolveLoadedRows({
+                page,
+                numOfRows: state.rows.length,
+                pageSize: PAGE_SIZE,
+                maxLoaded: MAX_LOADED_PAGES
+            }),
         });
         console.log('state changed:', state);
     }
@@ -96,6 +95,45 @@ const App = data => {
     // All component functions (stateless or stateful)
     // must return the root node    
     return element;
+}
+
+const resolvePage = function resolvePage(scrollYPos, pageHeight, page, maxLoaded) {
+    const topPage = resolveTopPage(page, maxLoaded);
+    return Math.floor(scrollYPos / pageHeight) + topPage;
+}
+
+const resolveTopPage = function resolveTopPage(page, maxLoaded) {
+    const adjacentPages = maxLoaded - 1;
+    const numofTopPages = Math.floor(adjacentPages / 2);
+    return (page - numofTopPages) < 0 ?
+        0 :
+        page - numofTopPages;
+}
+
+const resolveBotPage = function resolveBotPage(page, numOfRows, pageSize, maxLoaded) {
+    const totalPages = Math.ceil(numOfRows / pageSize);
+    const adjacentPages = maxLoaded - 1;
+    const numofBotPages = Math.ceil(adjacentPages / 2);
+    return (page + numofBotPages) > totalPages ?
+        totalPages :
+        page + numofBotPages;    
+}
+
+const resolveLoadedRows = function resolveLoadedRows({page, numOfRows, pageSize, maxLoaded}) {
+    const lastRow = numOfRows - 1;
+
+    const topPage = resolveTopPage(page, maxLoaded);
+    const botPage = resolveBotPage(page, numOfRows, pageSize, maxLoaded);
+
+    const topRow = topPage * pageSize;
+    const botRow = ((botPage * pageSize) + pageSize - 1) > lastRow ?
+        lastRow :
+        ((botPage * pageSize) + pageSize - 1);
+
+    return Array.from(
+        Array(botRow - topRow + 1),
+        (x, index) => index + topRow
+    );
 }
 
 export default App;
