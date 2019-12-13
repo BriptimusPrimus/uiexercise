@@ -1,7 +1,7 @@
 import Main from './Main.js';
 
 const constants = {
-    PAGE_SIZE: 6,
+    PAGE_SIZE: 3,
     MAX_LOADED_PAGES: 3
 }; 
 
@@ -41,7 +41,11 @@ const App = data => {
     let state = {
         ...data,
         currentPage: 0,
-        loadedRows: [0, 1]
+        loadedRows: Array.from(
+            Array(constants.PAGE_SIZE * constants.MAX_LOADED_PAGES),
+            (x, index) => index
+        ),
+        lastPageLoaded: constants.MAX_LOADED_PAGES - 1
     };
 
     const element = view(state);
@@ -54,9 +58,20 @@ const App = data => {
     });
 
     document.body.addEventListener('click', (e) => {
+        const totalPages = Math.ceil(state.rows.length / constants.PAGE_SIZE);
+        if (state.lastPageLoaded >= totalPages - 1) {
+            return;
+        }
+
         state = updateState({
             currentPage: state.currentPage + 1,
-            loadedRows: state.loadedRows.concat(state.loadedRows.length)
+            loadedRows: state.loadedRows.concat(
+                Array.from(
+                    Array(constants.PAGE_SIZE),
+                    (x, index) => index + state.loadedRows.length
+                )
+            ),
+            lastPageLoaded: state.lastPageLoaded + 1
         });
         console.log('state changed:', state);
     });
@@ -67,3 +82,5 @@ const App = data => {
 }
 
 export default App;
+
+// window.scrollY < document.body.scrollHeight - window.innerHeight;
