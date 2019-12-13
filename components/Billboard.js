@@ -37,6 +37,6 @@ const Billboard = ({videoIds, structure, videos}) => {
 
     li.appendChild(header);
     return li;
-};
+}
 
 export default Billboard;
