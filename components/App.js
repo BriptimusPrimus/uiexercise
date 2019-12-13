@@ -1,13 +1,12 @@
 import Main from './Main.js';
 
-const PAGE_SIZE = 3;
-const MAX_LOADED_PAGES = 5;
+const PAGE_SIZE = 6;
+const MAX_LOADED_PAGES = 3;
 const ROW_HEIGHT = 166;
 const PAGE_HEIGHT = PAGE_SIZE * ROW_HEIGHT;
 
 const register = function register({component, view, initialState}) {
     let currentState = initialState || {};
-    console.log('initialState:', initialState);
 
     function render(newState) {
       // Create new version of the component using new state
@@ -41,10 +40,12 @@ const App = data => {
     let state = {
         ...data,
         currentPage: 0,
-        loadedRows: Array.from(
-            Array(PAGE_SIZE * MAX_LOADED_PAGES),
-            (x, index) => index
-        )
+        loadedRows: resolveLoadedRows({
+            page: 0,
+            numOfRows: data.rows.length,
+            pageSize: PAGE_SIZE,
+            maxLoaded: MAX_LOADED_PAGES
+        }),
     };
 
     const element = view(state);
@@ -56,16 +57,15 @@ const App = data => {
         initialState: state
     });
 
-    let last_known_scroll_position = 0;
+    let lastKnownScrollPos = 0;
     let ticking = false;
-
     const scrollHandler = function scrollHandler(scrollYPos) {
-        // Uncomment for Infinite scroll
+        // Infinite scroll formula
         // window.scrollY < document.body.scrollHeight - window.innerHeight;
-        // if (scrollYPos < document.body.scrollHeight - window.innerHeight) {
-        //     return;
-        // }
-        const page = resolvePage(scrollYPos, PAGE_HEIGHT, state.currentPage, MAX_LOADED_PAGES);
+        if (scrollYPos + ROW_HEIGHT < document.body.scrollHeight - window.innerHeight) {
+            return;
+        }
+        const page = resolvePage(scrollYPos, PAGE_HEIGHT);
         if (page === state.currentPage) {
             return;
         }
@@ -79,16 +79,16 @@ const App = data => {
                 maxLoaded: MAX_LOADED_PAGES
             }),
         });
-        console.log('state changed:', state);
+        // console.log('state changed:', state);
     }
     window.addEventListener('scroll', (e) => {
-        const last_known_scroll_position = window.scrollY;
+        lastKnownScrollPos = window.scrollY;
         if (!ticking) {
-          window.requestAnimationFrame(function() {
-            scrollHandler(last_known_scroll_position);
-            ticking = false;
-          });
-          ticking = true;
+            window.requestAnimationFrame(function() {
+                scrollHandler(lastKnownScrollPos);
+                ticking = false;
+            });
+            ticking = true;
         }
     });
 
@@ -97,42 +97,27 @@ const App = data => {
     return element;
 }
 
-const resolvePage = function resolvePage(scrollYPos, pageHeight, page, maxLoaded) {
-    const topPage = resolveTopPage(page, maxLoaded);
-    return Math.floor(scrollYPos / pageHeight) + topPage;
-}
-
-const resolveTopPage = function resolveTopPage(page, maxLoaded) {
-    const adjacentPages = maxLoaded - 1;
-    const numofTopPages = Math.floor(adjacentPages / 2);
-    return (page - numofTopPages) < 0 ?
-        0 :
-        page - numofTopPages;
-}
-
-const resolveBotPage = function resolveBotPage(page, numOfRows, pageSize, maxLoaded) {
-    const totalPages = Math.ceil(numOfRows / pageSize);
-    const adjacentPages = maxLoaded - 1;
-    const numofBotPages = Math.ceil(adjacentPages / 2);
-    return (page + numofBotPages) > totalPages ?
-        totalPages :
-        page + numofBotPages;    
+const resolvePage = function resolvePage(scrollYPos, pageHeight) {
+    return Math.floor(scrollYPos / pageHeight);
 }
 
 const resolveLoadedRows = function resolveLoadedRows({page, numOfRows, pageSize, maxLoaded}) {
     const lastRow = numOfRows - 1;
+    const totalPages = Math.ceil(numOfRows / pageSize);
+    const adjacentPages = maxLoaded - 1;
+    const numofBotPages = Math.ceil(adjacentPages / 2);
 
-    const topPage = resolveTopPage(page, maxLoaded);
-    const botPage = resolveBotPage(page, numOfRows, pageSize, maxLoaded);
+    const botPage = (page + numofBotPages) > totalPages ?
+        totalPages :
+        page + numofBotPages;
 
-    const topRow = topPage * pageSize;
     const botRow = ((botPage * pageSize) + pageSize - 1) > lastRow ?
         lastRow :
         ((botPage * pageSize) + pageSize - 1);
 
     return Array.from(
-        Array(botRow - topRow + 1),
-        (x, index) => index + topRow
+        Array(botRow + 1),
+        (x, index) => index
     );
 }
 
