@@ -11,18 +11,23 @@ import Billboard from './Billboard.js';
         </ul>
     </section>
 */}
-const Gallery = ({rows, billboards, videos}) => {
+const Gallery = ({loadedRows, rows, billboards, videos}) => {
     const section = document.createElement('section');
     section.setAttribute('class', 'gallery');
 
     const ul = document.createElement('ul');
 
-    rows.map((videoIds, rowIndex) => {
+    loadedRows.map((loadedRowIdx) => {
+            const videoIds = rows[loadedRowIdx];
+            if (!videoIds) {
+                return undefined;
+            }
+
             // Check for billboard rows
-            if (billboards[rowIndex]) {
+            if (billboards[loadedRowIdx]) {
                 return Billboard({
                     videoIds,
-                    structure: billboards[rowIndex],
+                    structure: billboards[loadedRowIdx],
                     videos
                 });
             }

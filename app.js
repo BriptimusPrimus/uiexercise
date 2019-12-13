@@ -1,7 +1,6 @@
 import App from './components/App.js';
 
 const init = function init(initialData) {
-    console.log('initialData:', initialData);
     const element = App(initialData);
     const container = document.getElementById('root');
     container.innerHtml = '';
