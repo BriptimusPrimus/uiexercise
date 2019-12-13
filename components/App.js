@@ -57,9 +57,16 @@ const App = data => {
         initialState: state
     });
 
-    document.body.addEventListener('click', (e) => {
-        const totalPages = Math.ceil(state.rows.length / constants.PAGE_SIZE);
+    const totalPages = Math.ceil(state.rows.length / constants.PAGE_SIZE);
+    let last_known_scroll_position = 0;
+    let ticking = false;
+
+    // window.scrollY < document.body.scrollHeight - window.innerHeight;
+    const scrollHandler = function scrollHandler(scrollYPos) {
         if (state.lastPageLoaded >= totalPages - 1) {
+            return;
+        }
+        if (scrollYPos < document.body.scrollHeight - window.innerHeight) {
             return;
         }
 
@@ -74,6 +81,16 @@ const App = data => {
             lastPageLoaded: state.lastPageLoaded + 1
         });
         console.log('state changed:', state);
+    }
+    window.addEventListener('scroll', (e) => {
+        const last_known_scroll_position = window.scrollY;
+        if (!ticking) {
+          window.requestAnimationFrame(function() {
+            scrollHandler(last_known_scroll_position);
+            ticking = false;
+          });
+          ticking = true;
+        }
     });
 
     // All component functions (stateless or stateful)
@@ -82,5 +99,3 @@ const App = data => {
 }
 
 export default App;
-
-// window.scrollY < document.body.scrollHeight - window.innerHeight;
