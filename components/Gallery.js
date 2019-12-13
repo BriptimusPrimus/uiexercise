@@ -11,7 +11,13 @@ import Billboard from './Billboard.js';
         </ul>
     </section>
 */}
-const Gallery = ({loadedRows, rows, billboards, videos}) => {
+const Gallery = ({
+    loadedRows,
+    rows,
+    billboards,
+    videos,
+    inlineBillboardIn
+}) => {
     const section = document.createElement('section');
     section.setAttribute('class', 'gallery');
 
@@ -28,7 +34,8 @@ const Gallery = ({loadedRows, rows, billboards, videos}) => {
                 return Billboard({
                     videoIds,
                     structure: billboards[loadedRowIdx],
-                    videos
+                    videos,
+                    inlineBillboardIn
                 });
             }
 

@@ -26,10 +26,10 @@ import Gallery from './Gallery.js';
    <Gallery/>
 </main> 
 */}
-const Main = ({loadedRows, rows, billboards, videos}) => {
+const Main = (props) => {
     const main = document.createElement('main');
 
-    const gallery = Gallery({loadedRows, rows, billboards, videos});
+    const gallery = Gallery(props);
     main.appendChild(gallery);
 
     return main;

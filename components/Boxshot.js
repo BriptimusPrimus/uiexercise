@@ -4,7 +4,7 @@
 const Boxshot = ({video}) => {
     const { id, title, boxart } = video;
     const img = document.createElement('img');
-    img.setAttribute('id', id);
+    img.setAttribute('id', `video_${id}`);
     img.setAttribute('src', boxart);
     img.setAttribute('alt', title);
     img.setAttribute('class', 'boxshot');

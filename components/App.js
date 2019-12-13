@@ -5,6 +5,13 @@ const MAX_LOADED_PAGES = 3;
 const ROW_HEIGHT = 166;
 const PAGE_HEIGHT = PAGE_SIZE * ROW_HEIGHT;
 
+const isInViewport = function isInViewport(elem) {
+    if (!elem || !elem.getBoundingClientRect) {
+        return;
+    }
+    return elem.getBoundingClientRect().bottom <= window.innerHeight;
+};
+
 const register = function register({component, view, initialState}) {
     let currentState = initialState || {};
 
@@ -46,6 +53,7 @@ const App = data => {
             pageSize: PAGE_SIZE,
             maxLoaded: MAX_LOADED_PAGES
         }),
+        inlineBillboardIn: false
     };
 
     const element = view(state);
@@ -57,9 +65,23 @@ const App = data => {
         initialState: state
     });
 
+    let inlineBlbdEl;
+    const onScrollFadeIn = function onScrollFadeIn(scrollYPos) {
+        // Stop checking after first success
+        if (state.inlineBillboardIn) {
+            return;
+        }
+
+        if (isInViewport(inlineBlbdEl)) {
+            state = updateState({
+                inlineBillboardIn: true
+            });
+            console.log('IN VIEW');
+        }
+    }
     let lastKnownScrollPos = 0;
     let ticking = false;
-    const scrollHandler = function scrollHandler(scrollYPos) {
+    const onScrollPagination = function onScrollPagination(scrollYPos) {
         // Infinite scroll formula
         // window.scrollY < document.body.scrollHeight - window.innerHeight;
         if (scrollYPos + ROW_HEIGHT < document.body.scrollHeight - window.innerHeight) {
@@ -79,13 +101,15 @@ const App = data => {
                 maxLoaded: MAX_LOADED_PAGES
             }),
         });
+        inlineBlbdEl = document.querySelector('.row-billboard-inline');
         // console.log('state changed:', state);
     }
     window.addEventListener('scroll', (e) => {
         lastKnownScrollPos = window.scrollY;
         if (!ticking) {
             window.requestAnimationFrame(function() {
-                scrollHandler(lastKnownScrollPos);
+                onScrollPagination(lastKnownScrollPos);
+                onScrollFadeIn();
                 ticking = false;
             });
             ticking = true;

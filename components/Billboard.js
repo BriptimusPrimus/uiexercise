@@ -8,7 +8,7 @@ import BillboardMeta from './BillboardMeta.js';
     </header>
 </li>
 */}
-const Billboard = ({videoIds, structure, videos}) => {
+const Billboard = ({videoIds, structure, videos, inlineBillboardIn}) => {
     if (!Array.isArray(videoIds) || videoIds[0] === undefined) {
         return undefined;
     }
@@ -24,7 +24,7 @@ const Billboard = ({videoIds, structure, videos}) => {
     li.setAttribute('class', bgnClassName);
 
     const header = document.createElement('header');
-    header.setAttribute('id', videoId);
+    header.setAttribute('id', `video_${videoId}`);
 
     const bgndImg = document.createElement('img');
     const imgSrc = video.background || video.backgroundShort;
@@ -35,7 +35,9 @@ const Billboard = ({videoIds, structure, videos}) => {
 
     const metadata = BillboardMeta({
         video,
-        buttons: structure.buttons
+        buttons: structure.buttons,
+        hidden: structure.type === 'inline' && !inlineBillboardIn,
+        fadeIn: structure.type === 'inline' && inlineBillboardIn
     });
     header.appendChild(metadata);
 
