@@ -7,7 +7,7 @@
 ~~build pagination~~\
 improve pagination (lru)\
 ~~fade in when in view port~~\
-clean up\
+~~clean up~~\
 research\
 progressive image loading\
 state-ui-lib\

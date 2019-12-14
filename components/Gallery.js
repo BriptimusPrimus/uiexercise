@@ -16,7 +16,8 @@ const Gallery = ({
     rows,
     billboards,
     videos,
-    inlineBillboardIn
+    inlineBillboardIn,
+    fadeIn
 }) => {
     const section = document.createElement('section');
     section.setAttribute('class', 'gallery');
@@ -35,7 +36,8 @@ const Gallery = ({
                     videoIds,
                     structure: billboards[loadedRowIdx],
                     videos,
-                    inlineBillboardIn
+                    inlineBillboardIn,
+                    fadeIn
                 });
             }
 
