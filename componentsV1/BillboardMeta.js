@@ -47,7 +47,7 @@ const BillboardMeta = ({video, buttons, hidden, fadeIn}) => {
     const { logo, synopsis } = video;
 
     const hiddenClass = hidden || fadeIn ? 'hidden' : '';
-    const article = d(
+    const element = d(
         'article',
         {
             class: `billboard-metadata ${hiddenClass}`
@@ -73,11 +73,11 @@ const BillboardMeta = ({video, buttons, hidden, fadeIn}) => {
     // And we wait for some time before removing it
     if (fadeIn) {
         setTimeout(()=> {
-            article.setAttribute('class', 'billboard-metadata');
+            element.setAttribute('class', 'billboard-metadata');
         }, 500);
     }
 
-    return article;
+    return element;
 }
 
 export default BillboardMeta;
