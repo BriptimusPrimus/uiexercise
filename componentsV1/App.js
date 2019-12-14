@@ -25,11 +25,12 @@ const App = data => {
             pageSize: PAGE_SIZE,
             maxLoaded: MAX_LOADED_PAGES
         }),
-        inlineBillboardIn: false
+        inlineBillboardIn: false,
+        fadeIn: false
     };
     // Returns a store with a dispatch function to
     // trigger state changes by dispatching actions.
-    const store = createStore(initialState);
+    const store = createStore(initialState, reducer);
 
     // In order to make a component stateful, we must
     // register the rendering function (view) with the store.
@@ -91,10 +92,7 @@ const scrollHandlersFactory = function scrollHandlersFactory(store, constants) {
 
         if (shouldFadeIn(inlineBlbdEl)) {
             store.dispatch({
-                state: {
-                    inlineBillboardIn: true,
-                    fadeIn: true
-                }
+                type: 'FADE_IN'
             });
         }
     }
@@ -111,17 +109,11 @@ const scrollHandlersFactory = function scrollHandlersFactory(store, constants) {
         }
 
         store.dispatch({
-            state: {
-                currentPage: page,
-                loadedRows: resolveLoadedRows({
-                    page,
-                    numOfRows: store.getState().rows.length,
-                    pageSize: PAGE_SIZE,
-                    maxLoaded: MAX_LOADED_PAGES
-                }),
-                // Set to default value to prevent repetetion
-                fadeIn: false
-            }
+            type: 'SET_PAGE',
+            page,
+            numOfRows: store.getState().rows.length,
+            pageSize: PAGE_SIZE,
+            maxLoaded: MAX_LOADED_PAGES
         });
         inlineBlbdEl = document.querySelector('.row-billboard-inline');
     }
@@ -134,15 +126,72 @@ const scrollHandlersFactory = function scrollHandlersFactory(store, constants) {
 
 export default App;
 
-// // Reducers
-// const reducer = function app(state, action) {
-//     return {
-//         rows: ,
-//         billboards: ,
-//         videos: 
 
-//         currentPage: ,
-//         loadedRows: ,
-//         inlineBillboardIn: 
-//     };
-// }
+// Reducers
+const rows = function rows(state) {
+    return state;
+}
+
+const billboards = function billboards(state) {
+    return state;
+}
+
+const videos = function videos(state) {
+    return state;
+}
+
+const currentPage = function currentPage(state, action) {
+    switch (action.type) {
+        case 'SET_PAGE':
+            return action.page;
+        default:
+            return state;
+    }
+    return state;
+}
+
+const loadedRows = function loadedRows(state, action) {
+    switch (action.type) {
+        case 'SET_PAGE':
+            return resolveLoadedRows({
+                page: action.page,
+                numOfRows: action.numOfRows,
+                pageSize: action.pageSize,
+                maxLoaded: action.maxLoaded
+            });
+        default:
+            return state;
+    }
+}
+
+const inlineBillboardIn = function inlineBillboardIn(state, action) {
+    switch (action.type) {
+        case 'FADE_IN':
+            return true;
+        default:
+            return state;
+    }
+}
+
+const fadeIn = function fadeIn(state, action) {
+    switch (action.type) {
+        case 'FADE_IN':
+            return true;
+        case 'SET_PAGE':
+            return false;
+        default:
+            return state;
+    }
+}
+
+const reducer = function app(state, action) {
+    return {
+        rows: rows(state.rows, action),
+        billboards: billboards(state.billboards, action),
+        videos: videos(state.videos, action),
+        currentPage: currentPage(state.currentPage, action),
+        loadedRows: loadedRows(state.loadedRows, action),
+        inlineBillboardIn: inlineBillboardIn(state.inlineBillboardIn, action),
+        fadeIn: fadeIn(state.fadeIn, action)
+    };
+}
