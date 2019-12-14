@@ -10,7 +10,7 @@ improve pagination (lru)\
 ~~clean up~~\
 research\
 progressive image loading\
-state-ui-lib\
+~~state-ui-lib~~\
 lint\
 format\
 unit tests
