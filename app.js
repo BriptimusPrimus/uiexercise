@@ -1,4 +1,5 @@
-import App from './components/App.js';
+// import App from './components/App.js';
+import App from './componentsV1/App.js';
 
 const init = function init(initialData) {
     const element = App(initialData);
