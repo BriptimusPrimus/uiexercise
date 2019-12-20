@@ -3,7 +3,8 @@ import Main from './Main.js';
 import reducer from '../reducers/app.js';
 import {
     resolvePage,
-    resolveLoadedRows    
+    resolveLoadedRows,
+    throttle
 } from '../lib/helpers.js';
 import { scrollHandlersFactory } from '../lib/eventsV1.js';
 
@@ -11,6 +12,7 @@ const PAGE_SIZE = 6;
 const MAX_LOADED_PAGES = 3;
 const ROW_HEIGHT = 166;
 const PAGE_HEIGHT = PAGE_SIZE * ROW_HEIGHT;
+const SCROLL_DELAY = 100;
 
 const view = function view(state) {
     return Main(state); 
@@ -40,29 +42,17 @@ const App = data => {
         store
     });
 
-    const {
-        onScrollFadeIn,
-        onScrollPagination
-    } = scrollHandlersFactory(store, {
+    const { onScrollPagination } = scrollHandlersFactory(store, {
         PAGE_SIZE,
         MAX_LOADED_PAGES,
         ROW_HEIGHT,
         PAGE_HEIGHT
     });
 
-    let lastKnownScrollPos = 0;
-    let ticking = false;
-    window.addEventListener('scroll', (e) => {
-        lastKnownScrollPos = window.scrollY;
-        if (!ticking) {
-            window.requestAnimationFrame(function() {
-                onScrollPagination(lastKnownScrollPos);
-                onScrollFadeIn();
-                ticking = false;
-            });
-            ticking = true;
-        }
-    });
+    const throttledScroll = throttle(() => {
+        onScrollPagination(window.scrollY);
+    }, SCROLL_DELAY);
+    window.addEventListener('scroll', throttledScroll);
 
     // All component functions (stateless or stateful)
     // must return the root node
