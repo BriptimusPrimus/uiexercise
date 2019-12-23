@@ -83,6 +83,10 @@ const Grid = (props) => {
     }, SCROLL_DELAY);
     window.addEventListener('scroll', throttledScroll);
 
+    setTimeout(() => {
+        observeBillboard();
+    });    
+
     return element;
 }
 
