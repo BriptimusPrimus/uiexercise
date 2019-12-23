@@ -28,24 +28,35 @@ const update = function update(root) {
         }
 
         const elements = Array.from(root.children);
-        for (let i = 0; i < elements.length; i++) {
-            const el = elements[i];
-            console.log(el.id);
+        elements.forEach(el => {
             if (remove[el.dataset.rowId] === true) {
-                console.log('YES, REMOVE');
                 root.removeChild(el);
             }
-        }
-
-        Object.keys(add).forEach(rowIdx => {
-            const el = RowView({
-                ...state,
-                rowIdx
-            });
-            if (el) {
-                root.appendChild(el);
-            }
         });
+
+        const addKeys = Object.keys(add);
+        if (addKeys[0] > Number(elements[elements.length - 1].dataset.rowId)) {
+            addKeys.forEach(rowIdx => {
+                const el = RowView({
+                    ...state,
+                    rowIdx
+                });
+                if (el) {
+                    root.appendChild(el);
+                }
+            });
+        } else {
+            for (let i = addKeys.length - 1; i >= 0; i-=1) {
+                const rowIdx = addKeys[i];
+                const el = RowView({
+                    ...state,
+                    rowIdx
+                });
+                if (el) {
+                    root.prepend(el);
+                }
+            }
+        }
     }
 }
 
