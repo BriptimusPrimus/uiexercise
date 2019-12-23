@@ -36,6 +36,36 @@ const loadedRows = function loadedRows(state, action) {
     }
 }
 
+const keyMapper = function keyMapper(acum, curr) {
+    return {
+        ...acum,
+        [curr]: true
+    };
+}
+
+const rowsDiff = function rowsDiff(state, action) {
+    switch (action.type) {
+        case 'SET_PAGE':
+            const calc = resolveLoadedRows({
+                page: action.page,
+                numOfRows: action.numOfRows,
+                pageSize: action.pageSize,
+                maxLoaded: action.maxLoaded
+            });
+            const curr = state.loadedRows;
+            return {
+                remove: calc[0] > curr[0] ?
+                    curr.filter(num => num < calc[0]).reduce(keyMapper, {}) :
+                    curr.filter(num => num > calc[calc.length - 1]).reduce(keyMapper, {}),
+                add: calc[0] >= curr[0] ?
+                    calc.filter(num => num > curr[curr.length - 1]).reduce(keyMapper, {}) :
+                    calc.filter(num => num < curr[0]).reduce(keyMapper, {})
+            };
+        default:
+            return {};
+    }
+}
+
 const inlineBillboardIn = function inlineBillboardIn(state, action) {
     switch (action.type) {
         case 'FADE_IN':
@@ -63,6 +93,7 @@ const reducer = function reducer(state, action) {
         videos: videos(state.videos, action),
         currentPage: currentPage(state.currentPage, action),
         loadedRows: loadedRows(state.loadedRows, action),
+        rowsDiff: rowsDiff(state, action),
         inlineBillboardIn: inlineBillboardIn(state.inlineBillboardIn, action),
         fadeIn: fadeIn(state.fadeIn, action)
     };

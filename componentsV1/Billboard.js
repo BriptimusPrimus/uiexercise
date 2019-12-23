@@ -10,6 +10,7 @@ import BillboardMeta from './BillboardMeta.js';
 </li>
 */}
 const Billboard = ({
+    rowId,
     videoIds,
     structure,
     videos,
@@ -27,6 +28,8 @@ const Billboard = ({
     return d(
         'li',
         {
+            id: `row_${rowId}`,
+            'data-row-id': rowId,
             class: structure.type === 'inline' ?
                 'row-billboard row-billboard-inline' :
                 'row-billboard'

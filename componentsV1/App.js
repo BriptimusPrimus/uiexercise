@@ -8,11 +8,11 @@ import {
 } from '../lib/helpers.js';
 import { scrollHandlersFactory } from '../lib/eventsV1.js';
 
-const PAGE_SIZE = 6;
-const MAX_LOADED_PAGES = 3;
+const PAGE_SIZE = 3;
+const MAX_LOADED_PAGES = 7;
 const ROW_HEIGHT = 166;
 const PAGE_HEIGHT = PAGE_SIZE * ROW_HEIGHT;
-const SCROLL_DELAY = 100;
+const SCROLL_DELAY = 2000;
 
 const view = function view(state) {
     return Main(state); 
@@ -31,32 +31,37 @@ const App = data => {
         inlineBillboardIn: false,
         fadeIn: false
     };
-    // Returns a store with a dispatch function to
-    // trigger state changes by dispatching actions.
-    const store = createStore(initialState, reducer);
+    return view(initialState);
+    // // Returns a store with a dispatch function to
+    // // trigger state changes by dispatching actions.
+    // const store = createStore(initialState, reducer);
 
-    // In order to make a component stateful, we must
-    // register the rendering function (view) with the store.
-    const element = register({
-        view,
-        store
-    });
+    // // In order to make a component stateful, we must
+    // // register the rendering function (view) with the store.
+    // const element = register({
+    //     view,
+    //     store
+    // });
 
-    const { onScrollPagination } = scrollHandlersFactory(store, {
-        PAGE_SIZE,
-        MAX_LOADED_PAGES,
-        ROW_HEIGHT,
-        PAGE_HEIGHT
-    });
+    // const { onScrollPagination, observeBillboard } = scrollHandlersFactory(store, {
+    //     PAGE_SIZE,
+    //     MAX_LOADED_PAGES,
+    //     ROW_HEIGHT,
+    //     PAGE_HEIGHT
+    // });
 
-    const throttledScroll = throttle(() => {
-        onScrollPagination(window.scrollY);
-    }, SCROLL_DELAY);
-    window.addEventListener('scroll', throttledScroll);
+    // const throttledScroll = throttle(() => {
+    //     onScrollPagination();
+    // }, SCROLL_DELAY);
+    // window.addEventListener('scroll', throttledScroll);
 
-    // All component functions (stateless or stateful)
-    // must return the root node
-    return element;
+    // setTimeout(() => {
+    //     observeBillboard();
+    // }, 10);
+
+    // // All component functions (stateless or stateful)
+    // // must return the root node
+    // return element;
 }
 
 export default App;

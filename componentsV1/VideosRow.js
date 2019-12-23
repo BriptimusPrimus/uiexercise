@@ -10,10 +10,12 @@ import Boxshot from './Boxshot.js';
     </article>
 </il> 
 */}
-const VideosRow = ({videoIds, videos}) => {
+const VideosRow = ({rowId, videoIds, videos}) => {
     return d(
         'li',
         {
+            id: `row_${rowId}`,
+            'data-row-id': rowId,
             class: 'row-videos'
         },
         d(
