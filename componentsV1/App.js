@@ -8,11 +8,13 @@ import {
 } from '../lib/helpers.js';
 import { scrollHandlersFactory } from '../lib/eventsV1.js';
 
-const PAGE_SIZE = 3;
-const MAX_LOADED_PAGES = 7;
-const ROW_HEIGHT = 166;
-const PAGE_HEIGHT = PAGE_SIZE * ROW_HEIGHT;
-const SCROLL_DELAY = 2000;
+import {
+    PAGE_SIZE,
+    MAX_LOADED_PAGES,
+    ROW_HEIGHT,
+    PAGE_HEIGHT,
+    SCROLL_DELAY
+} from '../lib/constants.js';
 
 const view = function view(state) {
     return Main(state); 

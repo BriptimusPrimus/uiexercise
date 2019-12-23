@@ -1,11 +1,12 @@
+import { place } from './lib/state-ui-lib/index.js';
 // import App from './components/App.js';
 import App from './componentsV1/App.js';
 
 const init = function init(initialData) {
-    const element = App(initialData);
-    const container = document.getElementById('root');
-    container.innerHtml = '';
-    container.appendChild(element);
+    place(
+        App(initialData),
+        document.getElementById('root')
+      );
 }
 
 // Changes the structure of the initial data to provide
